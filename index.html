@@ -14,13 +14,30 @@
   </div>
   <div class="start-container">
     <div class="title">Карточная игра</div>
+    <div class="mode-container">
+      <h1>Уровень сложности</h1>
+      <form action="" class="mode-form">
+        <div class="mode-radio-btn easy-btn">
+          <input id="easy" type="radio" name="mode" value="easy" checked>
+          <label for="easy">Легко</label>
+        </div>
+        <div class="mode-radio-btn normal-btn">
+          <input id="normal" type="radio" name="mode" value="normal">
+          <label for="normal">Средне</label>
+        </div>
+        <div class="mode-radio-btn hard-btn">
+          <input id="hard" type="radio" name="mode" value="hard">
+          <label for="hard">Сложно</label>
+        </div>
+      </form>
+    </div>
     <button class="start-btn btn">Начать</button>
   </div>
   <div class="cards-container">
     <div class="title">Найдите одинаковые карты</div>
   </div>
   <div class="timer">
-    <p><span class="minutes">0</span>:<span class="seconds">59</span></p>
+    <p><span class="minutes"></span>:<span class="seconds"></span></p>
   </div>
   <script src="js/script.js"></script>
 </body>

@@ -1,3 +1,5 @@
+'use strict'
+
 const startContainer = document.querySelector('.start-container'),
       startBtn = startContainer.querySelector('.start-btn'),
       cardsContainer = document.querySelector('.cards-container'),
@@ -6,25 +8,50 @@ const startContainer = document.querySelector('.start-container'),
       modalBtn = modal.querySelector('button'),
       timer = document.querySelector('.timer');
 
-const count = 10,
-      cards = ['1', '2', '3', '4', '5'],
-      cardsPositions = [];
+const cards = [];
 
-let timeIntervel = '';
+let timeIntervel = '',
+    mode = 'easy';
 
 let activeCards = 0,
     openCards = []
 
-const time = '1'
+const options = {
+  easy: { // уровень сложности
+    height: 190, // высота карты
+    width: 190, // ширина карты
+    size: 800, // ширина контейнера с картами
+    count: 16, // количество карт
+    time: 1 // время на игру в минутах
+
+  },
+  normal: {
+    height: 140,
+    width: 140,
+    size: 1000,
+    count: 24,
+    time: 1.5
+  },
+  hard: {
+    height: 140,
+    width: 140,
+    size: 1000,
+    count: 30,
+    time: 2
+  }
+}
 
 const card = (id, position) => {
   return `
-  <div class="card" id="${id}" data-position="${position}">
+  <div class="card" id="${id}" 
+       data-position="${position}" 
+       style="height: ${options[mode].height}px; 
+       width: ${options[mode].width}px">
     <div class="front">
       <div class="inner-front"></div>
     </div>
     <div class="back">
-      <h1>${id}</h1>
+      <img src="img/${id}.png" alt="">
     </div>
   </div>
   `
@@ -33,6 +60,8 @@ const card = (id, position) => {
 // старт игры
 startBtn.addEventListener('click', () => {
   displayContainer(startContainer, 'none')
+  getMode()
+  setSizeCardsContainer()
   generateCards()
   placeCards()
   displayContainer(cardsContainer, 'flex')
@@ -42,11 +71,9 @@ startBtn.addEventListener('click', () => {
 // нажатие на карту
 cardsContainer.addEventListener('click', (e) => {
   const openCard = e.target.parentNode.parentNode;
-  if (openCard.className === 'card' && !openCard.classList.contains('guessed')) {
-    if (activeCards !== 2) {
-      rotateCard(openCard, 'open')
-      openCards.push([openCard.id, openCard.dataset.position])
-    }
+  if (openCard.className === 'card' && !openCard.classList.contains('guessed') && activeCards < 2) {
+    rotateCard(openCard, 'open')
+    openCards.push([openCard.id, openCard.dataset.position])
     handleCards()
   }
 })
@@ -62,18 +89,33 @@ const resetData = () => {
   openCards = []
 }
 
+// получение выбранного уровеня сложности
+const getMode = () => {
+  const modes = document.querySelectorAll('input[type="radio"]');
+  mode = [...modes].filter((e) => e.checked)[0].id
+}
+
+// установка ширины для контейнера с картами
+const setSizeCardsContainer = () => {
+  cardsContainer.style = `
+    width: ${options[mode].size}px;
+  `
+}
+
 // генерация карт в массиве
 const generateCards = () => {
-  cards.map(e => {
-    cardsPositions.push(e) 
-    cardsPositions.push(e)
-  })
-  cardsPositions.sort(() => Math.random() - 0.1)
+  let counter = 1;
+  for (let i = 1; i <= options[mode].count/2; i++) {
+    if (counter === 9) counter = 1
+    cards.push(`${counter}`, `${counter}`)
+    counter++
+  }
+  cards.sort(() => Math.random() - 0.5)
 }
 
 // создание карт на html странице
 const placeCards = () => {
-  cardsPositions.map((e, i) => {
+  cards.map((e, i) => {
     cardsContainer.innerHTML += card(e, i)
   })
 }
@@ -87,8 +129,8 @@ const displayContainer = (elem, param) => {
 const rotateCard = (target, mode) => {
   const childs = [...target.childNodes].filter(e => e.nodeName !== '#text')
 
-  let = deg1 = mode === 'open' ? '180' : '0', 
-        deg2 = mode === 'open' ? '360' : '0';
+  let deg1 = mode === 'open' ? '180' : '0', 
+      deg2 = mode === 'open' ? '360' : '0';
   
   childs[0].style.transform = `rotateY(${deg1}deg)`
   childs[1].style.transform = `rotateY(${deg2}deg)`
@@ -156,6 +198,8 @@ const resetGame = () => {
   displayContainer(cardsContainer, 'none');
   displayContainer(timer, 'none')
   displayContainer(startContainer, 'flex');
+  cards.length = 0;
+  resetData();
 
   [...document.querySelectorAll('.card')].map((e) => {
     e.remove()
@@ -169,7 +213,7 @@ const initTimer = () => {
 
   displayContainer(timer, 'flex')
 
-  let leftTime = time*60;
+  let leftTime = options[mode].time*60;
 
   function updateTimer() {
     const m = Math.floor(leftTime/60),
