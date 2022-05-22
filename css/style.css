@@ -150,6 +150,8 @@ body {
 .modal button {
   border: 2px solid #42df42;
   color: #42df42;
+  cursor: pointer;
+  transition: .2s;
 }
 
 .modal button:hover {
@@ -221,5 +223,125 @@ body {
 	color: #666;
 }
 
+.results {
+  width: 600px;
+  margin: 0 auto;
+  border: 1px solid #949bc5;
+  margin-top: 100px;
+  color: #131a46;
+  /* padding-bottom: 10px; */
+}
 
+caption {
+  font-weight: 600;
+  border: 1px solid #949bc5;
+  border-bottom: none;
+  font-size: 24px;
+  color: #3649b4;
+  padding: 10px 0;
+}
 
+.results th {
+  font-weight: 600;
+  padding: 5px;
+  color: #7480c7;
+}
+
+.results td {
+  padding: 5px;
+  text-align: center;
+}
+
+.center {
+  text-align: center;
+}
+
+.empty-row {
+  color: #a2a4b3;
+  font-size: 20px;
+}
+
+.get-name {
+  display: flex;
+}
+
+.get-name-container {
+  width: 400px;
+  height: 200px;
+  background: white;
+  margin-top: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+  /* box-shadow: -2px -2px 0px 2px #7480c7, 2px 2px 0px 2px #485492; */
+  border-top: 4px solid #7480c7;
+  border-left: 4px solid #7480c7;
+  border-right: 4px solid #485492;
+  border-bottom: 4px solid #485492;
+}
+
+.get-name-container .title {
+  font-size: 24px;
+}
+
+.name-input {
+  height: 40px;
+  width: 280px;
+  padding-left: 10px;
+  outline: none;
+  margin: 15px 0;
+  color: #131a46;
+}
+
+.modal .save-name-btn {
+  height: 40px;
+  width: 140px;
+  border-color: #7480c7;
+  color: #7480c7;
+  background: none;
+}
+
+.error-name-msg {
+  font-size: 10px;
+  color: #d34545;
+  margin-top: 7px;
+}
+
+.welcome {
+  display: none;
+  position: absolute;
+  left: 40px;
+  top: 0;
+  padding: 8px 23px;
+  background: #131174;
+  color: white;
+  /* #4f63d8, #131174 */
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.edit-name-btn {
+  position: absolute;
+  height: 30px;
+  width: 30px;
+  background: #131174;
+  border-radius: 50%;
+  outline: none;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 2px;
+  right: -34px;
+  cursor: pointer;
+}
+
+.edit-name-btn img {
+  height: 50%;
+  width: 50%;
+}
+
+.edit-name-btn:hover {
+  opacity: 0.7;
+}

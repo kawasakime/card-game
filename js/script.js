@@ -6,15 +6,10 @@ const startContainer = document.querySelector('.start-container'),
       modal = document.querySelector('.modal'),
       modalText = modal.querySelector('h1'),
       modalBtn = modal.querySelector('button'),
-      timer = document.querySelector('.timer');
-
-const cards = [];
-
-let timeIntervel = '',
-    mode = 'easy';
-
-let activeCards = 0,
-    openCards = []
+      timer = document.querySelector('.timer'), 
+      table = document.querySelector('.results'),
+      getNameModal = document.querySelector('.get-name'),
+      editNameBtn = document.querySelector('.edit-name-btn')
 
 const options = {
   easy: { // уровень сложности
@@ -22,7 +17,8 @@ const options = {
     width: 190, // ширина карты
     size: 800, // ширина контейнера с картами
     count: 16, // количество карт
-    time: 1 // время на игру в минутах
+    time: 1, // время на игру в минутах
+    name: 'Легко'
 
   },
   normal: {
@@ -30,16 +26,29 @@ const options = {
     width: 140,
     size: 1000,
     count: 24,
-    time: 1.5
+    time: 1.5,
+    name: 'Средне'
   },
   hard: {
     height: 140,
     width: 140,
     size: 1000,
     count: 30,
-    time: 2
+    time: 2,
+    name: 'Сложно'
   }
 }
+
+const cards = [];
+
+let timeIntervel = '',
+    mode = 'easy',
+    username = '',
+    leftTime = options[mode].time*60,
+    players = [];
+
+let activeCards = 0,
+    openCards = []
 
 const card = (id, position) => {
   return `
@@ -57,9 +66,75 @@ const card = (id, position) => {
   `
 }
 
+// получение результатов игроков из LocalStorage
+const getPlayersResults = () => {
+  if (localStorage.getItem('players') !== null) {
+    players = JSON.parse(localStorage.getItem('players'))
+  }
+}
+
+// запись в LocalStorage
+const setData = (param1, param2) => {
+  localStorage.setItem(param1, param2)
+}
+
+// функция для изменения показа/скрытия определённых блоков
+const displayContainer = (elem, param) => {
+  elem.style.display = param
+}
+
+// проверка имени в LocalStorage
+const checkUserName = () => {
+  if (localStorage.getItem('name') !== null) {
+    displayContainer(getNameModal, 'none')
+    username = localStorage.getItem('name')
+    showWelcome()
+  } else {
+    displayContainer(getNameModal, 'flex')
+  }
+}
+
+checkUserName()
+
+// сортировка игроков по времени
+const sortPlayers = () => {
+  players.sort((a, b) => a.time > b.time ? 1 : -1)
+}
+
+// очистка таблицы
+const clearTable = () => {
+  [...document.querySelectorAll('.results .player')].map((e, i) => {
+    e.remove()
+  })
+}
+
+// обновление таблицы лучших результатов
+const updateTable = () => {
+  if (players.length > 0) displayContainer(table.querySelector('.empty-row'), 'none')
+  clearTable()
+  sortPlayers()
+  players.map((e, i) => {
+    if (i < 10) {
+      const elem = document.createElement('tr');
+      elem.classList.add('player')
+      elem.innerHTML = `
+        <td>${i+1}</td>
+        <td>${e.name}</td>
+        <td>${e.mode}</td>
+        <td>${e.time}</td>
+      `
+      table.append(elem)
+    }
+  })
+}
+
+getPlayersResults()
+updateTable()
+
 // старт игры
 startBtn.addEventListener('click', () => {
   displayContainer(startContainer, 'none')
+  displayContainer(table, 'none')
   getMode()
   setSizeCardsContainer()
   generateCards()
@@ -81,6 +156,10 @@ cardsContainer.addEventListener('click', (e) => {
 // обработчик для кнопки модального окна
 modalBtn.addEventListener('click', () => {
   resetGame()
+})
+
+editNameBtn.addEventListener('click', () => {
+  displayContainer(getNameModal, 'flex')
 })
 
 // очистка временных данных
@@ -120,11 +199,6 @@ const placeCards = () => {
   })
 }
 
-// функция для изменения показа/скрытия определённых блоков
-const displayContainer = (elem, param) => {
-  elem.style.display = param
-}
-
 // развернуть карту
 const rotateCard = (target, mode) => {
   const childs = [...target.childNodes].filter(e => e.nodeName !== '#text')
@@ -143,7 +217,7 @@ const getCardsForPosition = (pos1, pos2) => {
           document.querySelector(`.card[data-position="${pos2}"]`)]
 }
 
-//устанавливает класс guessed, который показывает что карта отгадана
+// устанавливает класс guessed, который показывает что карта отгадана
 const setGuessedStatus = (pos1, pos2) => {
   const c = getCardsForPosition(pos1, pos2)
   c[0].classList.add('guessed')
@@ -155,6 +229,9 @@ const checkAllCards = () => {
   const allCards = document.querySelectorAll('.card')
   if (allCards.length === [...allCards].filter(e => e.classList.contains('guessed')).length) {
     showModal('win')
+    saveResults()
+    updateTable()
+    setData('players', JSON.stringify(players))
   }
 }
 
@@ -198,12 +275,22 @@ const resetGame = () => {
   displayContainer(cardsContainer, 'none');
   displayContainer(timer, 'none')
   displayContainer(startContainer, 'flex');
+  displayContainer(table, 'table')
   cards.length = 0;
   resetData();
 
   [...document.querySelectorAll('.card')].map((e) => {
     e.remove()
   })
+}
+
+// если минуты и секунды меньше 10, то добавляет перед ними 0
+function convertTime(t) {
+  const m = Math.floor(t/60),
+        s = Math.floor(t%60);
+  const minutes = m < 10 ? `0${m}` : m,
+        seconds = s < 10 ? `0${s}` : s
+  return [minutes, seconds]
 }
 
 // инициализация таймера
@@ -213,14 +300,10 @@ const initTimer = () => {
 
   displayContainer(timer, 'flex')
 
-  let leftTime = options[mode].time*60;
-
   function updateTimer() {
-    const m = Math.floor(leftTime/60),
-          s = Math.floor(leftTime%60)
-      
-    minutes.innerHTML = m < 10 ? `0${m}` : m
-    seconds.innerHTML = s < 10 ? `0${s}` : s
+    const t = convertTime(leftTime)
+    minutes.innerHTML = t[0]
+    seconds.innerHTML = t[1]
     if (leftTime === 0) {
       clearInterval(timeIntervel)
       showModal('lose')
@@ -231,3 +314,54 @@ const initTimer = () => {
   timeIntervel = setInterval(updateTimer, 1000);
 }
 
+// кнопка сохранения имени
+document.querySelector('.save-name-btn').addEventListener('click', (e) => {
+  getPlayerName()
+  displayContainer(getNameModal, 'none')
+  showWelcome()
+  localStorage.setItem('name', username)
+})
+
+// получение имени с инпута модального окна
+const getPlayerName = () => {
+  const nameInput = document.querySelector('.name-input'),
+        errorMsg = document.querySelector('.error-name-msg')
+
+  if (nameInput.value !== '') {
+    username = nameInput.value
+  }
+  else {
+    nameInput.style.color = "#d34545"
+    errorMsg.innerHTML = 'Поле не может быть пустым!'
+    setTimeout(() => {
+      nameInput.style.color = "#131a46"
+      errorMsg.innerHTML = ''
+    }, 1500)
+  }
+}
+
+// отображение блока с ником и кнопкой его редактирвоания
+function showWelcome() {
+  const welcomeBlock = document.querySelector('.welcome')
+  welcomeBlock.querySelector('span').innerHTML = `${username}`
+  displayContainer(welcomeBlock, 'block')
+}
+
+// сохранение результатов игры 
+const saveResults = () => {
+  let timePassed = options[mode].time*60 - leftTime;
+  const t = convertTime(timePassed)
+  if (players.filter(e => e.name === username).length > 0) {
+    players.map(e => {
+      if (e.name === username) 
+        e.time = `${t[0]}:${t[1]}`
+        e.mode = options[mode].name
+    })
+  } else {
+    players.push({
+      name: username,
+      time: `${t[0]}:${t[1]}`,
+      mode: options[mode].name
+    })
+  }
+}

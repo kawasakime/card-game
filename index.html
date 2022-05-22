@@ -12,6 +12,20 @@
     <h1></h1>
     <button class="close-modal btn hover">Ок</button>
   </div>
+  <div class="modal get-name">
+    <div class="get-name-container">
+      <div class="title">Введите ваше имя</div>
+      <input class="name-input" type="text" placeholder="Введите имя">
+      <button class="save-name-btn">Сохранить</button>
+      <div class="error-name-msg"></div>
+    </div>
+  </div>
+  <div class="welcome">
+    Привет, <span></span>
+    <button class="edit-name-btn">
+      <img src="img/edit.png" alt="">
+    </button>
+  </div>
   <div class="start-container">
     <div class="title">Карточная игра</div>
     <div class="mode-container">
@@ -39,6 +53,18 @@
   <div class="timer">
     <p><span class="minutes"></span>:<span class="seconds"></span></p>
   </div>
+  <table class="results">
+    <caption>Лучшие результаты</caption>
+    <tr>
+      <th>№</th>
+      <th>Имя</th>
+      <th>Сложность</th>
+      <th>Время</th>
+    </tr>
+    <tr class="empty-row">
+      <td class="center" colspan="4">Пусто</td>
+    </tr>
+  </table>
   <script src="js/script.js"></script>
 </body>
 </html>
