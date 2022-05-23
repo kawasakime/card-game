@@ -9,7 +9,7 @@
 
 Имеется 3 уровня сложности, на каждом добавляется количество карт и немного времени на игру.
 
-![Image alt](https://github.com/wyylame/card-game/raw/master/img/screenshots/cards_1.png)
+![Image alt](https://github.com/wyylame/card-game/raw/master/img/screenshots/cards__1.png)
 ![Image alt](https://github.com/wyylame/card-game/raw/master/img/screenshots/cards_2.png)
 ![Image alt](https://github.com/wyylame/card-game/raw/master/img/screenshots/cards_3.png)
 
