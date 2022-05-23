@@ -299,7 +299,7 @@ const initTimer = () => {
         seconds = timer.querySelector('.seconds')
 
   displayContainer(timer, 'flex')
-
+  leftTime = options[mode].time*60
   function updateTimer() {
     const t = convertTime(leftTime)
     minutes.innerHTML = t[0]
