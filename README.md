@@ -1,4 +1,4 @@
-# card-game
+# DEMO https://wyylame.github.io/card-game/
 Небольшая игра "Найди одинаковые карты"
 
 ![Image alt](https://github.com/wyylame/card-game/raw/master/img/screenshots/start.png)
